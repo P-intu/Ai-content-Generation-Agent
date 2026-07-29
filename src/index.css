@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-body bg-paper text-ink-800 dark:bg-ink-800 dark:text-paper transition-colors duration-300;
+}
+
+::selection {
+  @apply bg-citrus text-ink-800;
+}
+
+/* Visible keyboard focus, always */
+:focus-visible {
+  outline: 2px solid theme('colors.signal.DEFAULT');
+  outline-offset: 2px;
+}
+
+.card-surface {
+  @apply bg-white/70 dark:bg-ink-700/60 border border-ink-100/60 dark:border-ink-500/40 backdrop-blur-sm;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-ink-200 dark:bg-ink-500 rounded-full;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

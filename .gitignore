@@ -1,0 +1,38 @@
+# Environment & Secrets (NEVER PUSH TO GITHUB)
+.env
+.env.*
+*.env
+backend/.env
+backend/.env.*
+
+# Database & Storage
+backend/db.sqlite3
+backend/db.sqlite3-journal
+backend/staticfiles/
+*.sqlite3
+
+# Python & Django Caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+*.log
+
+# Node & Build Artifacts
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# IDE & OS System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
