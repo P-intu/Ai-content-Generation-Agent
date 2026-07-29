@@ -1,7 +1,7 @@
 import os
 import sys
 
-# Ensure backend and root directories are in sys.path for Vercel
+# Add backend and project root to Python search path
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(CURRENT_DIR)
 BACKEND_DIR = os.path.join(ROOT_DIR, 'backend')
@@ -13,18 +13,21 @@ if ROOT_DIR not in sys.path:
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
-import django
-django.setup()
+from django.core.wsgi import get_wsgi_application
 
-# Auto-migrate database on Vercel initialization
-from django.core.management import call_command
-try:
-    call_command('migrate', interactive=False)
-except Exception as e:
-    print(f"Auto-migration info/error: {e}")
+_application = get_wsgi_application()
 
-from core.wsgi import application
+_migrated = False
 
-# Export app and handler for Vercel serverless compatibility
-app = application
-handler = application
+def app(environ, start_response):
+    global _migrated
+    if not _migrated:
+        _migrated = True
+        try:
+            from django.core.management import call_command
+            call_command('migrate', interactive=False)
+        except Exception as e:
+            print(f"Lazy migration error: {e}")
+    return _application(environ, start_response)
+
+handler = app
