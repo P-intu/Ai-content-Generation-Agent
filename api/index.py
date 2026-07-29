@@ -16,7 +16,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 import django
 django.setup()
 
-# Run database migrations on serverless initialization to ensure tables exist in /tmp/db.sqlite3
+# Auto-migrate database on Vercel initialization
 from django.core.management import call_command
 try:
     call_command('migrate', interactive=False)
@@ -25,4 +25,6 @@ except Exception as e:
 
 from core.wsgi import application
 
+# Export app and handler for Vercel serverless compatibility
 app = application
+handler = application
