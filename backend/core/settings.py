@@ -77,19 +77,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-is_vercel = os.environ.get('VERCEL') == '1' or 'VERCEL' in os.environ
-if is_vercel:
-    tmp_db = Path('/tmp/db.sqlite3')
-    if not tmp_db.exists() and (BASE_DIR / 'db.sqlite3').exists():
-        import shutil
-        try:
-            shutil.copyfile(BASE_DIR / 'db.sqlite3', tmp_db)
-        except Exception:
-            pass
+is_vercel = os.environ.get('VERCEL') == '1' or 'VERCEL' in os.environ or 'VERCEL_ENV' in os.environ
+if is_vercel or not os.access(BASE_DIR, os.W_OK):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': tmp_db if tmp_db.exists() else '/tmp/db.sqlite3',
+            'NAME': Path('/tmp/db.sqlite3'),
         }
     }
 else:

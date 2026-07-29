@@ -1,7 +1,7 @@
 import os
 import sys
 
-# Add backend and project root to Python search path
+# Ensure backend and root directories are in sys.path
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(CURRENT_DIR)
 BACKEND_DIR = os.path.join(ROOT_DIR, 'backend')
@@ -15,19 +15,14 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
 from django.core.wsgi import get_wsgi_application
 
-_application = get_wsgi_application()
+# Initialize WSGI application
+app = get_wsgi_application()
 
-_migrated = False
-
-def app(environ, start_response):
-    global _migrated
-    if not _migrated:
-        _migrated = True
-        try:
-            from django.core.management import call_command
-            call_command('migrate', interactive=False)
-        except Exception as e:
-            print(f"Lazy migration error: {e}")
-    return _application(environ, start_response)
+# Run database migrations on Vercel container start
+try:
+    from django.core.management import call_command
+    call_command('migrate', interactive=False)
+except Exception as e:
+    print(f"Serverless migration log: {e}")
 
 handler = app
