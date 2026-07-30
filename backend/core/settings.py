@@ -8,6 +8,13 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+def get_env_list(name, default=''):
+    value = os.environ.get(name, default)
+    if not value:
+        return []
+    return [item.strip() for item in value.split(',') if item.strip()]
+
 # Read .env file if present
 env_file = BASE_DIR / '.env'
 if env_file.exists():
@@ -24,7 +31,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-aeduu)+rb!!1cey3t3q%0
 
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1')
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = get_env_list('ALLOWED_HOSTS', '*')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -124,6 +131,14 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'True').lower() in ('true', '1', 'yes')
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = get_env_list(
+    'CORS_ALLOWED_ORIGINS',
+    'http://localhost:5173,http://127.0.0.1:5173'
+)
+CSRF_TRUSTED_ORIGINS = get_env_list(
+    'CSRF_TRUSTED_ORIGINS',
+    'http://localhost:5173,http://127.0.0.1:5173'
+)
 
