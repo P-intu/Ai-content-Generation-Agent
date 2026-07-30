@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { FiMoon, FiSun, FiBell, FiShield } from 'react-icons/fi'
+import { FiMoon, FiSun, FiShield } from 'react-icons/fi'
 import Card from '../../components/Card/Card.jsx'
 import Button from '../../components/Button/Button.jsx'
 import { useTheme } from '../../context/ThemeContext.jsx'
@@ -26,7 +25,6 @@ function Toggle({ checked, onChange }) {
 
 export default function Settings() {
   const { theme, toggleTheme } = useTheme()
-  const [notifications, setNotifications] = useState(true)
   const { showToast } = useToast()
 
   return (
@@ -45,21 +43,6 @@ export default function Settings() {
             </div>
           </div>
           <Toggle checked={theme === 'dark'} onChange={toggleTheme} />
-        </div>
-      </Card>
-
-      <Card className="mb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-signal-50 dark:bg-ink-600">
-              <FiBell className="h-4 w-4 text-signal" />
-            </div>
-            <div>
-              <p className="font-medium text-ink-800 dark:text-paper">Notifications</p>
-              <p className="text-sm text-ink-400">Get notified when a draft finishes generating.</p>
-            </div>
-          </div>
-          <Toggle checked={notifications} onChange={() => setNotifications((n) => !n)} />
         </div>
       </Card>
 
@@ -85,3 +68,4 @@ export default function Settings() {
     </div>
   )
 }
+

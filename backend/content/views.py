@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
@@ -14,30 +15,44 @@ from .services import (
 class DashboardStatsView(APIView):
     """
     GET /api/content/dashboard/
-    Returns aggregated statistics for the dashboard.
+    Returns aggregated statistics for the dashboard:
+    - total_generated, most_used_content_type, most_used_tone, last_generated
     """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
-        # Total generated contents
-        total = GeneratedContent.objects.filter(user=user).count()
-        # Items created this week
-        from django.utils import timezone
-        from datetime import timedelta
-        week_ago = timezone.now() - timedelta(days=7)
-        this_week = GeneratedContent.objects.filter(user=user, created_at__gte=week_ago).count()
-        # Words drafted (sum of word counts)
-        contents = GeneratedContent.objects.filter(user=user).values_list('generated_text', flat=True)
-        words = sum(len(text.split()) for text in contents)
-        # Avg tone match placeholder (since not stored, return 96)
-        avg_tone_match = 96
+        qs = GeneratedContent.objects.filter(user=user)
+
+        total = qs.count()
+
+        # Most used content type
+        most_used_type = (
+            qs.values('content_type')
+            .annotate(count=models.Count('id'))
+            .order_by('-count')
+            .first()
+        )
+        most_content_type = most_used_type['content_type'] if most_used_type else 'N/A'
+
+        # Most used tone
+        most_used_tone = (
+            qs.values('tone')
+            .annotate(count=models.Count('id'))
+            .order_by('-count')
+            .first()
+        )
+        most_tone = most_used_tone['tone'] if most_used_tone else 'N/A'
+
+        # Last generated date
+        latest = qs.order_by('-created_at').first()
+        last_generated = latest.created_at.isoformat() if latest else None
+
         data = {
             "total_generated": total,
-            "this_week": this_week,
-            "words_drafted": words,
-            "saved_drafts": total,
-            "avg_tone_match": avg_tone_match,
+            "most_used_content_type": most_content_type,
+            "most_used_tone": most_tone,
+            "last_generated": last_generated,
         }
         return standard_response(True, "Dashboard stats retrieved", data, status.HTTP_200_OK)
 
