@@ -5,8 +5,12 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('inkwell-user')
-    return stored ? JSON.parse(stored) : null
+    try {
+      const stored = localStorage.getItem('inkwell-user')
+      return stored ? JSON.parse(stored) : null
+    } catch (e) {
+      return null
+    }
   })
   const [loading, setLoading] = useState(true)
 
@@ -19,11 +23,18 @@ export function AuthProvider({ children }) {
           const profileData = await fetchProfile()
           setUser(profileData)
         } catch (e) {
-          // Token expired or invalid
-          localStorage.removeItem('inkwell-tokens')
-          localStorage.removeItem('inkwell-user')
-          setUser(null)
+          // Only clear credentials if the response is explicitly 401 Unauthorized or 403 Forbidden
+          const status = e.originalError?.response?.status
+          if (status === 401 || status === 403) {
+            localStorage.removeItem('inkwell-tokens')
+            localStorage.removeItem('inkwell-user')
+            setUser(null)
+          } else {
+            console.warn('Session verification failed (network/server issue). Keeping cached session.', e)
+          }
         }
+      } else {
+        setUser(null)
       }
       setLoading(false)
     }
