@@ -4,9 +4,12 @@ const defaultApiBaseUrl = import.meta.env.DEV
   ? 'http://localhost:8000'
   : 'https://ai-content-generation-agent.onrender.com'
 
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || defaultApiBaseUrl
+const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '')
+
 // Base Axios instance pointing to the Django REST Framework backend
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || defaultApiBaseUrl,
+  baseURL: cleanBaseUrl,
   timeout: 40000, // 40 seconds to allow for LLM API responses
 })
 
