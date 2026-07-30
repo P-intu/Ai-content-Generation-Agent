@@ -23,11 +23,22 @@ class RegisterView(APIView):
             )
         
         validated_data = serializer.validated_data
-        result = register_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password']
-        )
+        try:
+            result = register_user(
+                username=validated_data['username'],
+                email=validated_data['email'],
+                password=validated_data['password']
+            )
+        except Exception as e:
+            from rest_framework.exceptions import ValidationError
+            if isinstance(e, ValidationError):
+                raise e
+            return standard_response(
+                success=False,
+                message="Registration failed due to a server error.",
+                errors={"detail": str(e)},
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
         
         return standard_response(
             success=True,
@@ -54,10 +65,21 @@ class LoginView(APIView):
             )
         
         validated_data = serializer.validated_data
-        result = authenticate_user(
-            username=validated_data['email'],
-            password=validated_data['password']
-        )
+        try:
+            result = authenticate_user(
+                username=validated_data['email'],
+                password=validated_data['password']
+            )
+        except Exception as e:
+            from rest_framework.exceptions import ValidationError
+            if isinstance(e, ValidationError):
+                raise e
+            return standard_response(
+                success=False,
+                message="Login failed due to a server error.",
+                errors={"detail": str(e)},
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
         
         return standard_response(
             success=True,

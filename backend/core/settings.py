@@ -85,11 +85,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
+IS_HEROKU_OR_RENDER = 'DATABASE_URL' in os.environ
+
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
-        ssl_require=False,
+        ssl_require=IS_HEROKU_OR_RENDER,
     )
 }
 
