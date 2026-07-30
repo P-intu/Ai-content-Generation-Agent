@@ -37,7 +37,7 @@ class AccountsAPITests(TestCase):
     def test_user_login_success(self):
         User.objects.create_user(**self.user_data)
         login_payload = {
-            "username": "testuser",
+            "email": "testuser@example.com",
             "password": "Password123!"
         }
         response = self.client.post(self.login_url, login_payload, format='json')
@@ -47,7 +47,7 @@ class AccountsAPITests(TestCase):
 
     def test_user_profile_authenticated(self):
         user = User.objects.create_user(**self.user_data)
-        login_res = self.client.post(self.login_url, {"username": "testuser", "password": "Password123!"}, format='json')
+        login_res = self.client.post(self.login_url, {"email": "testuser@example.com", "password": "Password123!"}, format='json')
         access_token = login_res.data['data']['tokens']['access']
 
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + access_token)

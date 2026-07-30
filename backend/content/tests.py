@@ -13,11 +13,11 @@ class ContentAPITests(TestCase):
         self.user2 = User.objects.create_user(username="user2", email="user2@example.com", password="Password123!")
 
         # Obtain token for user1
-        res1 = self.client.post(reverse('login'), {"username": "user1", "password": "Password123!"}, format='json')
+        res1 = self.client.post(reverse('login'), {"email": "user1@example.com", "password": "Password123!"}, format='json')
         self.user1_token = res1.data['data']['tokens']['access']
 
         # Obtain token for user2
-        res2 = self.client.post(reverse('login'), {"username": "user2", "password": "Password123!"}, format='json')
+        res2 = self.client.post(reverse('login'), {"email": "user2@example.com", "password": "Password123!"}, format='json')
         self.user2_token = res2.data['data']['tokens']['access']
 
         self.generate_url = reverse('content-generate')
